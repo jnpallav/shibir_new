@@ -1,33 +1,15 @@
 //import 'dart:io' show Platform;
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'myData.dart';
+import 'submitData.dart';
 //import 'package:firebase_database/ui/firebase_animated_list.dart';
 
 var finalScore = 0;
 var questionNumber = 0;
-var quiz = new AnimalQuiz();
-
-class AnimalQuiz {
-  var images = ["alligator", "cat", "dog", "owl"];
-
-  var questions = [
-    "This animal is a carnivorous reptile.",
-    "_________ like to chase mice and birds.",
-    "Give a _________ a bone and he will find his way home",
-    "A nocturnal animal with some really big eyes",
-  ];
-
-  var choices = [
-    ["Cat", "Sheep", "Alligator", "Cow"],
-    ["Cat", "Snail", "Slug", "Horse"],
-    ["Mouse", "Dog", "Elephant", "Donkey"],
-    ["Spider", "Snake", "Hawk", "Owl"]
-  ];
-
-  var correctAnswers = ["Alligator", "Cat", "Dog", "Owl"];
-}
 
 /*final FirebaseApp app = FirebaseApp.configure(
   options: Platform.isIOS
@@ -43,10 +25,35 @@ class AnimalQuiz {
         ),
 );*/
 
+class FirebaseTodos {
+  static Future<MyData> getTodo(String todoKey) async {
+    Completer<MyData> completer = new Completer<MyData>();
+
+    FirebaseDatabase.instance
+        .reference()
+        .child("Quiz")
+        .child(todoKey)
+        //.child(todoKey)
+        .once()
+        .then((DataSnapshot snapshot) {
+      completer.complete(new MyData.fromSnapshot(snapshot));
+    });
+
+    return completer.future;
+  }
+}
+
+final notesReference = FirebaseDatabase.instance.reference().child('result');
+
 class Quiz1 extends StatefulWidget {
   final String name, number, age, level;
 
-  Quiz1({Key key, this.name, this.number, this.age, this.level})
+  Quiz1(
+      {Key key,
+      @required this.name,
+      @required this.number,
+      @required this.age,
+      @required this.level})
       : super(key: key);
 
   @override
@@ -61,21 +68,30 @@ class QuizState1 extends State<Quiz1> {
   //   FirebaseDatabase.instance.reference().child("test");
 
   int _radioValue = -1;
+  String question = "";
+  String choice1 = "";
+  String choice2 = "";
+  String choice3 = "";
+  String choice4 = "";
+  String answer = "";
 
   @override
   void initState() {
     // TODO: implement initState
-
-    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
-    databaseReference.child("Quiz").once().then((DataSnapshot snap) {
-      var keys = snap.value.keys;
-      var data = snap.value;
-      debugPrint(keys);
-      debugPrint(data);
-      //allData.clear();
-    });
-
+    FirebaseTodos.getTodo(questionNumber.toString()).then(_updateTodo);
     super.initState();
+  }
+
+  _updateTodo(MyData value) {
+    debugPrint(value.toString());
+    setState(() {
+      question = value.question;
+      choice1 = value.choice1;
+      choice2 = value.choice2;
+      choice3 = value.choice3;
+      choice4 = value.choice4;
+      answer = value.answer;
+    });
   }
 
   @override
@@ -98,7 +114,7 @@ class QuizState1 extends State<Quiz1> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         new Text(
-                          "Question ${questionNumber + 1} of ${quiz.questions.length}",
+                          "Question ${questionNumber + 1} of ${4}",
                           style: new TextStyle(fontSize: 22.0),
                         ),
                         //new Text("Score: $finalScore",style: new TextStyle(fontSize: 22.0),)
@@ -107,16 +123,16 @@ class QuizState1 extends State<Quiz1> {
                   ),
 
                   //image
-                  new Padding(padding: EdgeInsets.all(10.0)),
+                  //new Padding(padding: EdgeInsets.all(10.0)),
 
-                  new Image.asset(
-                    "assets/${quiz.images[questionNumber]}.jpg",
-                  ),
+                  //new Image.asset(
+                  //  "assets/${quiz.images[questionNumber]}.jpg",
+                  // ),
 
                   new Padding(padding: EdgeInsets.all(10.0)),
 
                   new Text(
-                    quiz.questions[questionNumber],
+                    question,
                     style: new TextStyle(
                       fontSize: 20.0,
                     ),
@@ -133,7 +149,7 @@ class QuizState1 extends State<Quiz1> {
                         onChanged: _handleRadioValueChange,
                       ),
                       new Text(
-                        quiz.choices[questionNumber][0],
+                        choice1,
                         style:
                             new TextStyle(fontSize: 20.0, color: Colors.black),
                       ),
@@ -149,7 +165,7 @@ class QuizState1 extends State<Quiz1> {
                         onChanged: _handleRadioValueChange,
                       ),
                       new Text(
-                        quiz.choices[questionNumber][1],
+                        choice2,
                         style:
                             new TextStyle(fontSize: 20.0, color: Colors.black),
                       ),
@@ -165,7 +181,7 @@ class QuizState1 extends State<Quiz1> {
                         onChanged: _handleRadioValueChange,
                       ),
                       new Text(
-                        quiz.choices[questionNumber][2],
+                        choice3,
                         style:
                             new TextStyle(fontSize: 20.0, color: Colors.black),
                       ),
@@ -181,7 +197,7 @@ class QuizState1 extends State<Quiz1> {
                         onChanged: _handleRadioValueChange,
                       ),
                       new Text(
-                        quiz.choices[questionNumber][3],
+                        choice4,
                         style:
                             new TextStyle(fontSize: 20.0, color: Colors.black),
                       ),
@@ -225,7 +241,7 @@ class QuizState1 extends State<Quiz1> {
                           minWidth: 150.0,
                           height: 30.0,
                           color: Colors.blue,
-                          onPressed: sendData,
+                          onPressed: nextQuestion,
                           child: new Text(
                             "Next",
                             style: new TextStyle(
@@ -243,8 +259,7 @@ class QuizState1 extends State<Quiz1> {
   void _handleRadioValueChange(int value) {
     setState(() {
       _radioValue = value;
-
-      switch (_radioValue) {
+      /*switch (_radioValue) {
         case 0:
           if (quiz.choices[questionNumber][0] ==
               quiz.correctAnswers[questionNumber]) {
@@ -285,7 +300,7 @@ class QuizState1 extends State<Quiz1> {
             debugPrint("Wrong");
           }
           break;
-      }
+      }*/
     });
   }
 
@@ -294,19 +309,29 @@ class QuizState1 extends State<Quiz1> {
       Navigator.pop(context);
       finalScore = 0;
       questionNumber = 0;
+      FirebaseTodos.getTodo(questionNumber.toString()).then(_updateTodo);
     });
-  }
-
-  void sendData() {
-    //databaseReference.push().set({'name': 'kded', 'lastName': 'qde'});
   }
 
   void nextQuestion() {
     setState(() {
       if (_radioValue != -1) {
-        if (quiz.choices[questionNumber][_radioValue] ==
-            quiz.correctAnswers[questionNumber]) {
-          finalScore++;
+        if (_radioValue == 0) {
+          if (choice1 == answer) {
+            finalScore++;
+          }
+        } else if (_radioValue == 1) {
+          if (choice2 == answer) {
+            finalScore++;
+          }
+        } else if (_radioValue == 2) {
+          if (choice3 == answer) {
+            finalScore++;
+          }
+        } else if (_radioValue == 3) {
+          if (choice4 == answer) {
+            finalScore++;
+          }
         }
         _radioValue = -1;
         updateQuestion();
@@ -341,54 +366,31 @@ class QuizState1 extends State<Quiz1> {
 
   void updateQuestion() {
     setState(() {
-      if (questionNumber == quiz.questions.length - 1) {
-        Navigator.push(
+      if (questionNumber == 3) {
+        notesReference
+            .push()
+            .set(new SubmitData(new DateTime.now(), widget.name, widget.number,
+                    widget.age, widget.level, finalScore.toString())
+                .toJson())
+            .then((_) {
+          // ...
+          questionNumber = 0;
+          finalScore = 0;
+          Navigator.pop(context);
+        });
+        /*Navigator.push(
             context,
             new MaterialPageRoute(
                 builder: (context) => new Summary(
-                      score: finalScore,
-                    )));
+                    score: finalScore,
+                    name: widget.name,
+                    number: widget.number,
+                    age: widget.age,
+                    level: widget.level)));*/
       } else {
         questionNumber++;
+        FirebaseTodos.getTodo(questionNumber.toString()).then(_updateTodo);
       }
     });
-  }
-}
-
-class Summary extends StatelessWidget {
-  final int score;
-  Summary({Key key, @required this.score}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return new WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        body: new Container(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Text(
-                "Final Score: $score",
-                style: new TextStyle(fontSize: 35.0),
-              ),
-              new Padding(padding: EdgeInsets.all(30.0)),
-              new MaterialButton(
-                color: Colors.red,
-                onPressed: () {
-                  questionNumber = 0;
-                  finalScore = 0;
-                  Navigator.pop(context);
-                },
-                child: new Text(
-                  "Reset Quiz",
-                  style: new TextStyle(fontSize: 20.0, color: Colors.white),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'place_holder_widget.dart';
 import 'quiz_screen.dart';
+import 'result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final List<Widget> _children = [
     MainScreen(),
-    PlaceholderWidget(Colors.green)
+    ResultScreen()
   ];
   @override
   Widget build(BuildContext context) {
