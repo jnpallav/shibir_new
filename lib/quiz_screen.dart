@@ -13,7 +13,7 @@ class _MainScreenState extends State<MainScreen> {
   List<DropdownMenuItem<String>> ageDrop = [];
   List<String> age = ["10-15", "15-25", "25-40", "45+"];
   List<DropdownMenuItem<String>> level = [];
-  List<String> levelTopic = ["Low", "Medium", "High"];
+  List<String> levelTopic = ["Easy", "Medium", "High"];
 
   GlobalKey<FormState> _key = new GlobalKey();
   bool _validate = false;
@@ -61,17 +61,17 @@ class _MainScreenState extends State<MainScreen> {
   Widget formUI() {
     return new Column(
       children: <Widget>[
-        new SizedBox(height: 30.0),
-        new Image.asset(
+        SizedBox(height: 30.0),
+        Image.asset(
           'assets/jainprateek.png',
           height: 100.0,
         ),
-        new SizedBox(height: 30.0),
-        new Text('SHIBIR'),
+        SizedBox(height: 30.0),
+        Text('SHIBIR'),
 
-        new SizedBox(height: 15.0),
+        SizedBox(height: 15.0),
 
-        new TextFormField(
+        TextFormField(
           decoration: InputDecoration(
             filled: true,
             hintText: 'Name',
@@ -85,9 +85,9 @@ class _MainScreenState extends State<MainScreen> {
           },
         ),
 // spacer
-        new SizedBox(height: 12.0),
+        SizedBox(height: 12.0),
 //mobile number
-        new TextFormField(
+        TextFormField(
           decoration: InputDecoration(
             filled: true,
             hintText: 'Mobile Number',
@@ -100,9 +100,9 @@ class _MainScreenState extends State<MainScreen> {
             number = val;
           },
         ),
-        new SizedBox(height: 12.0),
+        SizedBox(height: 12.0),
 //dropdown
-        new DropdownButton(
+        DropdownButton(
           value: selectedAge,
           items: ageDrop,
           elevation: 16,
@@ -114,8 +114,8 @@ class _MainScreenState extends State<MainScreen> {
           },
         ),
         //dropdown
-        new SizedBox(height: 12.0),
-        new DropdownButton(
+        SizedBox(height: 12.0),
+        DropdownButton(
           value: selectedLevel,
           items: level,
           elevation: 16,
@@ -128,10 +128,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
         new ButtonBar(
           children: <Widget>[
-            new FlatButton(
-              child: Text('CANCEL'),
-              onPressed: () {},
-            ),
             new RaisedButton(
               child: Text('Start Quiz'),
               onPressed: startQuiz,
@@ -217,3 +213,8 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 }
+
+/*new FlatButton(
+              child: Text('CANCEL'),
+              onPressed: () {},
+            ),*/

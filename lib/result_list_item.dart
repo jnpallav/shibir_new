@@ -24,14 +24,13 @@ class ResultListItem extends StatelessWidget {
                 new Column(
                   children: [
                     new Text(
-                      new DateFormat.MMMEd().format(submitData.dateTime),
-                      textScaleFactor: 0.9,
+                      submitData.name,
+                      textScaleFactor: 1.5,
                       textAlign: TextAlign.left,
                     ),
                     new Text(
-                      new TimeOfDay.fromDateTime(submitData.dateTime)
-                          .toString(),
-                      textScaleFactor: 0.8,
+                      submitData.level,
+                      textScaleFactor: 1.0,
                       textAlign: TextAlign.right,
                       style: new TextStyle(
                         color: Colors.grey,
@@ -41,18 +40,6 @@ class ResultListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                 ),
-                (submitData.name == null || submitData.name.isEmpty)
-                    ? new Container(
-                        height: 0.0,
-                      )
-                    : new Padding(
-                        padding: new EdgeInsets.only(left: 4.0),
-                        child: new Icon(
-                          Icons.speaker_notes,
-                          color: Colors.grey[300],
-                          size: 16.0,
-                        ),
-                      ),
               ],
             ),
           ),
@@ -66,3 +53,18 @@ class ResultListItem extends StatelessWidget {
     );
   }
 }
+
+/*new Text(
+                      new DateFormat.MMMEd().format(submitData.dateTime),
+                      textScaleFactor: 0.9,
+                      textAlign: TextAlign.left,
+                    ),
+                    new Text(
+                      new TimeOfDay.fromDateTime(submitData.dateTime)
+                          .toString(),
+                      textScaleFactor: 0.8,
+                      textAlign: TextAlign.right,
+                      style: new TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),*/

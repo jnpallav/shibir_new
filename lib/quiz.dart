@@ -1,9 +1,9 @@
 //import 'dart:io' show Platform;
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+
 import 'myData.dart';
 import 'submitData.dart';
 //import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -336,26 +336,30 @@ class QuizState1 extends State<Quiz1> {
         _radioValue = -1;
         updateQuestion();
       } else {
-        _showDialog();
+        _showDialog("Choose any one option", true);
       }
     });
   }
 
-  void _showDialog() {
+  void _showDialog(String message, bool flag) {
     // flutter defined function
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Choose any one option"),
+          title: new Text(message),
           //content: new Text("Choose any one option"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                if (flag) {
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.pop(context);
+                }
               },
             ),
           ],
@@ -376,17 +380,9 @@ class QuizState1 extends State<Quiz1> {
           // ...
           questionNumber = 0;
           finalScore = 0;
-          Navigator.pop(context);
+
+          _showDialog("Quiz submitted successfully", false);
         });
-        /*Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (context) => new Summary(
-                    score: finalScore,
-                    name: widget.name,
-                    number: widget.number,
-                    age: widget.age,
-                    level: widget.level)));*/
       } else {
         questionNumber++;
         FirebaseTodos.getTodo(questionNumber.toString()).then(_updateTodo);
